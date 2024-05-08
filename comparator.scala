@@ -10,6 +10,7 @@ abstract class Comparator[T] {
 
 abstract class MyList[+T] {
 
+  def apply(index: Int): Option[T]
   def head: T
   def tail: MyList[T]
   def isEmpty: Boolean
@@ -22,6 +23,7 @@ abstract class MyList[+T] {
 
 object Empty extends MyList[Nothing] {
 
+  override def apply(index: Int): Option[Nothing] = None
   override def head: Nothing = throw new NoSuchElementException
   override def tail: MyList[Nothing] = Empty
   def isEmpty: Boolean = true
@@ -29,10 +31,18 @@ object Empty extends MyList[Nothing] {
   def sort[A >: Nothing] (comparator: Comparator[A]): MyList[A] = Empty
   def binarySearch[A >: Nothing](comparator: Comparator[A], target: A): Option[Int] = Option(-1)
   def printElements: String = ""
+
+
 }
 
 
 case class NonEmptyList[+T](h:T, t: MyList[T]) extends MyList[T] {
+
+  def apply(index: Int): Option[T] = {
+    if(index < 0) None
+    else if(index == 0) Some(head)
+    else t.apply(index - 1)
+  }
 
   def head: T = h
   def tail: MyList[T] = t
@@ -108,29 +118,27 @@ case class NonEmptyList[+T](h:T, t: MyList[T]) extends MyList[T] {
   //     // val index = resMap(target)
 
 
-    def binarySearch[A >:T](comparator: Comparator[A], target: A): Option[Int] = ???
+//    def binarySearch[A >:T](comparator: Comparator[A], target: A): Option[Int] = ???
 
 
-//  def binarySearch[A >:T](comparator: Comparator[A], target: A): Option[Int] = {
-//
-//    def binary_search_helper(mylist: MyList[A], low: Int, high: Int, target: A, index:Int = 3): Option[Int] = {
-//
-//
-//      if (low >= high) Some(-1)
-//
-//      else {
-//        val mid = (low + high) / 2
-//        comparator.compare(mylist(mid), target) match {
-//          case n if n < 0 => binary_search_helper(mylist, mid + 1, high, target)
-//          case n if n > 0 => binary_search_helper(mylist, low, mid - 1, target)
-//          case _ => Some(mid)
-//
-//        }
-//      }
-//      //binary_search_helper(mylist, 0, mylist.size - 1, target)
-//    }
-//    binary_search_helper(this, 0, this.size - 1, target)
-//  }
+  def binarySearch[A >:T](comparator: Comparator[A], target: A): Option[Int] = {
+
+    def binary_search_helper(mylist: MyList[A], low: Int, high: Int, target: A): Option[Int] = {
+
+      if (low > high) Some(-1)
+
+      else {
+        val mid = (low + high) / 2
+        comparator.compare(mylist(mid).get, target) match {
+          case n if n < 0 => binary_search_helper(mylist, mid + 1, high, target)
+          case n if n > 0 => binary_search_helper(mylist, low, mid - 1, target)
+          case _ => Some(mid)
+
+        }
+      }
+    }
+    binary_search_helper(this, 0, this.size - 1, target)
+  }
 
 
   override def printElements: String =
@@ -144,6 +152,7 @@ object comparator_main extends App {
 
   val list = new NonEmptyList(4, new NonEmptyList(2, new NonEmptyList(3, Empty)))
 
+
   println(list.printElements)
   println(list.tail.tail.head)
   println(list.isEmpty)
@@ -156,10 +165,10 @@ object comparator_main extends App {
   println(sortedlist2.printElements)
 
 
-//  val target = 2
-//  val target_result = sortedlist2.binarySearch(new Comparator[Int] { override def compare(o1: Int, o2: Int): Int = o1 - o2}, target)
+  val target = 4
+  val target_result = sortedlist2.binarySearch(new Comparator[Int] { override def compare(o1: Int, o2: Int): Int = o1 - o2}, target)
 
-//  println(target_result)
+  println(target_result)
 
 }
 
