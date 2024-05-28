@@ -1,10 +1,11 @@
-package Assignments
+package assignments
 
 import scala.io.Source
 
 object Thief_data extends App {
 
-  val scalaFileContents = Source.fromFile("src/Assignments/thief.txt").getLines()
+  val scalaFile = Source.fromFile("src/Assignments/thief.txt")
+  val scalaFileContents = scalaFile.getLines()
 
   val datalist = for {
     line <- scalaFileContents
@@ -16,15 +17,13 @@ object Thief_data extends App {
 
   val toggles = for {
     list <- lists
-    result = NumberOfFlips(list)
+    result = numberOfFlips(list)
   } yield  result
 
   val togglesList = toggles.toList
   println(togglesList)
 
-
-
-  def NumberOfFlips(str: String): Int = {
+  def numberOfFlips(str: String): Int = {
     var count = 0
     var isOpen = true
 
@@ -37,4 +36,19 @@ object Thief_data extends App {
     count
   }
 
+  def numberOfFlips2(str: String): Int = {
+    var count = 0
+    var previousState = str(0)
+    if(previousState == '0')
+      count += 1
+
+    for(s <- str) {
+      if(s != previousState) {
+        count += 1
+        previousState = s
+      }
+    }
+    count
+  }
+  scalaFile.close()
 }

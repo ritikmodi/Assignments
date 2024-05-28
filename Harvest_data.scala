@@ -1,31 +1,27 @@
-package Assignments
+package assignments
 
 import scala.io.Source
 import java.io.{File, FileReader}
 import scala.collection.MapView
 
-
-
-
 case class Price(fruit: String, date: String, price: Double)
 case class Harvest(collector: String, date: String, fruit: String, amount: Double)
-
 
 object Harvest_data extends App {
 
   val separator = "-"
 
-  def Earnings(harvestList: List[Harvest], priceList: List[Price]): List[(String, String, String, Double)] = {
+  def earnings(harvestList: List[Harvest], priceList: List[Price]): List[(String, String, String, Double)] = {
 
     for {
       harvest <- harvestList
       price <- priceList
       if harvest.fruit == price.fruit && harvest.date == price.date
-    } yield ( harvest.collector, harvest.date, harvest.fruit, harvest.amount * price.price)
+    } yield (harvest.collector, harvest.date, harvest.fruit, harvest.amount * price.price)
   }
 
 
-  def BestCollectorQuantityByMonth(harvestList: List[Harvest]): MapView[String, String] = {
+  def bestCollectorQuantityByMonth(harvestList: List[Harvest]): MapView[String, String] = {
     val collectionsByMonth = harvestList.groupBy(entry => entry.date.substring(5, 7))
 
     val bestCollectorQuantityByMonth = collectionsByMonth.mapValues { group =>
@@ -38,23 +34,21 @@ object Harvest_data extends App {
   }
 
 
+  def bestCollectorByFruit(harvestList: List[Harvest]): MapView[String, String] = {
 
-   def BestCollectorByFruit(harvestList: List[Harvest]): MapView[String, String] = {
+    val groupedCollectors = harvestList.groupBy(entry => entry.collector)
 
-      val groupedCollectors = harvestList.groupBy(entry => entry.collector)
+    val collectorFruitAmounts = groupedCollectors.mapValues { group =>
+      val fruitAmounts = group.groupBy(entry => entry.fruit).mapValues(group => group.map(entry => entry.amount).sum)
+      val maxFruitCollector = fruitAmounts.maxBy { case (_, amount) => amount }
 
-      val collectorFruitAmounts = groupedCollectors.mapValues { group =>
-        val fruitAmounts = group.groupBy(entry => entry.fruit).mapValues(group => group.map(entry => entry.amount).sum)
-        val maxFruitCollector = fruitAmounts.maxBy { case (_, amount) => amount }
-
-        maxFruitCollector._1
-      }
-     collectorFruitAmounts
+      maxFruitCollector._1
     }
+    collectorFruitAmounts
+  }
 
 
-
-  def BestCollectorByFruit_2(harvestList: List[Harvest]): MapView[String, String] = {
+  def bestCollectorByFruit_2(harvestList: List[Harvest]): MapView[String, String] = {
 
     val groupedCollectors = harvestList.groupBy(entry => entry.fruit)
 
@@ -68,13 +62,12 @@ object Harvest_data extends App {
   }
 
 
-
-  def BestProfitableFruitByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
+  def bestProfitableFruitByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
     val earningsByMonth = earnings.groupBy(entry => entry._2.split("-")(1))
 
     val bestFruitByMonth = earningsByMonth.mapValues { group =>
       val fruitEarnings = group.groupBy(entry => entry._3).mapValues(group => group.map(entry => entry._4).sum)
-      val maxEarning = fruitEarnings.maxBy { case (_, earnings) => earnings}
+      val maxEarning = fruitEarnings.maxBy { case (_, earnings) => earnings }
       maxEarning._1
 
     }
@@ -82,19 +75,19 @@ object Harvest_data extends App {
   }
 
 
-  def BestProfitableFruitOverall(earnings: List[(String, String, String, Double)]): String = {
+  def bestProfitableFruitOverall(earnings: List[(String, String, String, Double)]): String = {
     val fruitEarnings = earnings.groupBy(entry => entry._3).mapValues(group => group.map(entry => entry._4).sum)
-    val maxEarning = fruitEarnings.maxBy { case (_, earnings) => earnings}
+    val maxEarning = fruitEarnings.maxBy { case (_, earnings) => earnings }
     maxEarning._1
   }
 
 
-  def LeastProfitableFruitByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
+  def leastProfitableFruitByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
     val earningsByMonth = earnings.groupBy(entry => entry._2.split("-")(1))
 
     val leastFruitByMonth = earningsByMonth.mapValues { group =>
       val fruitEarnings = group.groupBy(entry => entry._3).mapValues(group => group.map(entry => entry._4).sum)
-      val minEarning = fruitEarnings.minBy { case (_, earnings) => earnings}
+      val minEarning = fruitEarnings.minBy { case (_, earnings) => earnings }
       minEarning._1
 
     }
@@ -102,21 +95,20 @@ object Harvest_data extends App {
   }
 
 
-  def LeastProfitableFruitOverall(earnings: List[(String, String, String, Double)]): String = {
+  def leastProfitableFruitOverall(earnings: List[(String, String, String, Double)]): String = {
     val fruitEarnings = earnings.groupBy(entry => entry._3).mapValues(group => group.map(entry => entry._4).sum)
-    val minEarning = fruitEarnings.minBy { case (_, earnings) => earnings}
+    val minEarning = fruitEarnings.minBy { case (_, earnings) => earnings }
     minEarning._1
   }
 
 
-
-  def CollectorContributionsByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
+  def collectorContributionsByMonth(earnings: List[(String, String, String, Double)]): MapView[String, String] = {
 
     val earningsByMonth = earnings.groupBy(entry => entry._2.split("-")(1))
 
     val bestCollectorByMonth = earningsByMonth.mapValues { group =>
       val collectorEarnings = group.groupBy(entry => entry._1).mapValues(group => group.map(entry => entry._4).sum)
-      val maxEarning = collectorEarnings.maxBy { case (_, earnings) => earnings}
+      val maxEarning = collectorEarnings.maxBy { case (_, earnings) => earnings }
       maxEarning._1
 
     }
@@ -124,10 +116,10 @@ object Harvest_data extends App {
   }
 
 
-  def CollectorContributions(earnings: List[(String, String, String, Double)]): String = {
+  def collectorContributions(earnings: List[(String, String, String, Double)]): String = {
 
     val collectorEarnings = earnings.groupBy(entry => entry._1).mapValues(group => group.map(entry => entry._4).sum)
-    val maxEarning = collectorEarnings.maxBy { case (_, earnings) => earnings}
+    val maxEarning = collectorEarnings.maxBy { case (_, earnings) => earnings }
     maxEarning._1
 
     //    val collectorContributions = earnings.groupBy(entry => entry._1).mapValues(group => group.map(entry => entry._4).sum)
@@ -136,43 +128,40 @@ object Harvest_data extends App {
   }
 
 
-
-
-
-  val harvest_filePath = "src/Assignments/harvest.txt"
-  val harvest_input  = Source.fromFile( harvest_filePath ).getLines()
+  val harvest = Source.fromFile("src/assignments/harvest.csv")
+  val harvest_input = harvest.getLines().drop(1)
 
   val harvest_datalist = harvest_input.map { line =>
 
-      val values = line.trim.split("\\s+").toList
-      Harvest(values(0), values(1), values(2), values(3).toDouble)
+    val values = line.trim.split(",").toList
+    Harvest(values(0), values(1), values(2), values(3).toDouble)
   }.toList
 
 //  harvest_datalist.foreach(println)
 
+  //  val prices_filePath = "src/Assignments/prices.txt"
+  //  val prices_input  = Source.fromFile( prices_filePath ).getLines()
 
+  val prices = Source.fromFile("src/assignments/prices.csv")
+  val prices_input = prices.getLines().drop(1)
+  //  sourceLines.map(_.split("\t")).toArray.foreach(_.foreach(println))
 
-  val prices_filePath = "src/Assignments/prices.txt"
-  val prices_input  = Source.fromFile( prices_filePath ).getLines()
 
   val prices_datalist = prices_input.map { line =>
-
-      val values = line.trim.split("\\s+").toList
-      Price(values(0), values(1), values(2).toDouble)
+    val values = line.trim.split(",").toList
+    Price(values(0), values(1), values(2).toDouble)
   }.toList
 
-//  prices_datalist.foreach(println)
+    prices_datalist.foreach(println)
 
 
+  val total_earnings = earnings(harvest_datalist, prices_datalist)
+  //  println(total_earnings)
 
-  val total_earnings = Earnings(harvest_datalist, prices_datalist)
-//  println(total_earnings)
-
-//  total_earnings.foreach(println)
-
+  //  total_earnings.foreach(println)
 
 
-  val monthwise_bestCollectorByAmount = BestCollectorQuantityByMonth(harvest_datalist)
+  val monthwise_bestCollectorByAmount = bestCollectorQuantityByMonth(harvest_datalist)
   println("Month-wise Best Collector By Amount ----> ")
   monthwise_bestCollectorByAmount.foreach(println)
 
@@ -181,7 +170,7 @@ object Harvest_data extends App {
   println()
 
 
-  val bestCollectorByFruit = BestCollectorByFruit_2(harvest_datalist)
+  val bestCollectorByFruit = bestCollectorByFruit_2(harvest_datalist)
   println("Best Collector By Fruit ----> ")
   bestCollectorByFruit.foreach(println)
 
@@ -189,7 +178,7 @@ object Harvest_data extends App {
   println()
   println()
 
-  val monthwise_bestProfitableFruit = BestProfitableFruitByMonth(total_earnings)
+  val monthwise_bestProfitableFruit = bestProfitableFruitByMonth(total_earnings)
   println("Month-wise Best Profitable Fruit ----> ")
   monthwise_bestProfitableFruit.foreach(println)
 
@@ -198,14 +187,14 @@ object Harvest_data extends App {
   println()
 
 
-  val overall_bestProfitableFruit = BestProfitableFruitOverall(total_earnings)
+  val overall_bestProfitableFruit = bestProfitableFruitOverall(total_earnings)
   println("Overall Best Profitable Fruit ----> " + overall_bestProfitableFruit)
 
   println()
   println()
   println()
 
-  val monthwise_leastProfitableFruit = LeastProfitableFruitByMonth(total_earnings)
+  val monthwise_leastProfitableFruit = leastProfitableFruitByMonth(total_earnings)
   println("Month-wise Least Profitable Fruit ----> ")
   monthwise_leastProfitableFruit.foreach(println)
 
@@ -213,14 +202,14 @@ object Harvest_data extends App {
   println()
   println()
 
-  val overall_leastProfitableFruit = LeastProfitableFruitOverall(total_earnings)
+  val overall_leastProfitableFruit = leastProfitableFruitOverall(total_earnings)
   println("Overall Least Profitable Fruit ----> " + overall_leastProfitableFruit)
 
   println()
   println()
   println()
 
-  val monthwise_bestCollector = CollectorContributionsByMonth(total_earnings)
+  val monthwise_bestCollector = collectorContributionsByMonth(total_earnings)
   println("Month-wise Best Collector ----> ")
   monthwise_bestCollector.foreach(println)
 
@@ -229,8 +218,19 @@ object Harvest_data extends App {
   println()
 
 
-  val overall_bestCollector = CollectorContributions(total_earnings)
-  println("Overall Best Profitable Fruit ----> " + overall_bestCollector)
+  val overall_bestCollector = collectorContributions(total_earnings)
+  println("Overall Best Collector ----> " + overall_bestCollector)
+
+  harvest.close()
+  prices.close()
+
+
+
+}
+
+
+
+
 
 
 
@@ -262,19 +262,6 @@ object Harvest_data extends App {
 //  val prices_csv = readFile("prices.csv").map(list => Price(list(1), list(2), list(3).toDouble))
 //  println("Prices Data from csv ----> ")
 //  prices_csv.foreach(println)
-
-
-
-}
-
-
-
-
-
-
-
-
-
 
 
 

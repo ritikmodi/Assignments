@@ -1,4 +1,4 @@
-package Assignments
+package assignments
 
 import scala.io.Source
 
@@ -27,12 +27,13 @@ object Core_data extends App {
 
 
 
-  val scalaFileContents = Source.fromFile("src/Assignments/CoreData.txt").getLines()
+  val scalaFile = Source.fromFile("src/assignments/CoreData.txt")
+  val scalaFileContents = scalaFile.getLines()
 
   val data = for {
     line <- scalaFileContents
     //values = line.split(", ").toList
-  } yield  line
+  } yield line
 
 
   val datalist = data.toList
@@ -58,12 +59,12 @@ object Core_data extends App {
       //println(sum)
       if (list.isEmpty && sum < 10) sum
       else if (list.isEmpty) coreDigitNewHelper(sum.toString.toList, 0)
-      else coreDigitNewHelper(list.tail, sum + list.head.toInt - 48)
+      else coreDigitNewHelper(list.tail, sum + (list.head.toInt - '0'))
 
     }
-
     coreDigitNewHelper(number.toList, 0)
-
   }
+
+  scalaFile.close()
 
 }
